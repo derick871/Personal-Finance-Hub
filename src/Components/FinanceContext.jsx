@@ -1,90 +1,106 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db, googleProvider } from '../firebaseConfig';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 
-// 1. Correct capitalization for context object
 const FinanceContext = createContext();
 
-// 2. Destructure 'children' in lowercase
 export const FinanceProvider = ({ children }) => {
-    // FIXED: Changed commas to semicolons at the end of state initializations
-    const [user, setUser] = useState(null);
-    // FIXED: Kept names consistent (plural) to avoid 'setTransactions is not a function' error
-    const [transactions, setTransactions] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            if (!currentUser) {
-                setTransactions([]);
-                setLoading(false);
-            }
-        });
-        return unsubscribe;
-    }, []);
+  // Sync state with Firebase Auth observers
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      
+      // Wipe state data if user logs out
+      if (!currentUser) {
+        setTransactions([]);
+        setLoading(false);
+      }
+    });
+    return unsubscribe; 
+  }, []);
 
-    useEffect(() => {
-        if (!user) return;
+  // Listen to Firestore real-time collection streams matching user unique ID (UID)
+  useEffect(() => {
+    if (!user) return;
 
-        // FIXED: Used the state updater 'setLoading', not 'isLoading'
-        setLoading(true);
-        
-        // FIXED: "uid" must be a string inside the where() clause
-        const q = query(
-            collection(db, "transactions"),
-            where("uid", "==", user.uid),
-            orderBy("createdAt", "desc")
-        );
-        
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const records = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-            setTransactions(records);
-            setLoading(false);
-        });
-        
-        return unsubscribe;
-    }, [user]);
+    setLoading(true);
 
-    // FIXED: Changed trailing commas to semicolons and fixed variable casing
-    const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
-    const logOutUser = () => signOut(auth);
-
-    // Firestore Engine Operations
-    const addTransaction = async (title, amount, type, category) => {
-        if (!user) return;
-        await addDoc(collection(db, "transactions"), {
-            uid: user.uid,
-            title,
-            amount: parseFloat(amount),
-            type, // 'income' or 'expense'
-            category,
-            createdAt: Date.now()
-        });
-    };
-
-    // FIXED: Split 'await' and 'deleteDoc', fixed lowercase 'doc' helper, passed the dynamic dynamic 'id'
-    const deleteTransaction = async (id) => {
-        if (!user) return;
-        await deleteDoc(doc(db, "transactions", id));
-    };
-
-    // 3. Render the actual Provider wrapper instead of a placeholder component
-    return (
-        <FinanceContext.Provider value={{
-            user,
-            transactions,
-            loading,
-            loginWithGoogle,
-            logOutUser,
-            addTransaction,
-            deleteTransaction
-        }}>
-            {children}
-        </FinanceContext.Provider>
+    const q = query(
+      collection(db, "transactions"),
+      where("uid", "==", user.uid),
+      orderBy("createdAt", "desc")
     );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const records = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTransactions(records);
+      setLoading(false);
+    }, (error) => {
+      console.error("Firestore database connection failed:", error);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  // Auth Action Handlers
+  const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+  const logoutUser = () => signOut(auth);
+
+  // Firestore DB Action Handlers
+  const addTransaction = async (title, amount, type, category) => {
+    if (!user) return;
+    
+    try {
+      await addDoc(collection(db, "transactions"), {
+        uid: user.uid,
+        title,
+        amount: parseFloat(amount),
+        type, 
+        category,
+        createdAt: Date.now()
+      });
+    } catch (err) {
+      console.error("Failed to commit new entry to the cloud: ", err);
+    }
+  };
+
+  const deleteTransaction = async (id) => {
+    try {
+      await deleteDoc(doc(db, "transactions", id));
+    } catch (err) {
+      console.error("Failed to remove document profile: ", err);
+    }
+  };
+
+  return (
+    <FinanceContext.Provider value={{ 
+      user, 
+      transactions, 
+      loading, 
+      loginWithGoogle, 
+      logoutUser, 
+      addTransaction, 
+      deleteTransaction 
+     }}>
+      {children}
+    </FinanceContext.Provider>
+  );
 };
 
-// 4. Default export the Context so you can use it with React.useContext()
-export default FinanceContext;
+// Global Custom Hook for easy consumption
+export const useFinance = () => {
+  const context = useContext(FinanceContext);
+  if (!context) {
+    throw new Error('useFinance must be wrapped inside a valid FinanceProvider structural tag.');
+  }
+  return context;
+};
