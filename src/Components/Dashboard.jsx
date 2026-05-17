@@ -1,14 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added for protection routing
 import { useFinance } from './FinanceContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export const Dashboard = () => {
-  // FIXED: Changed logOutUser to logoutUser to match context definition
-  const { user, logoutUser, loginWithGoogle, transactions, addTransaction, deleteTransaction, loading } = useFinance();
+  const { user, logoutUser, transactions, addTransaction, deleteTransaction, loading } = useFinance();
+  const navigate = useNavigate();
+  
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense');
   const [category, setCategory] = useState('Food');
+
+  // Strict Protection Route: If loading finished and user isn't found, send them to login screen
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/'); // Change this to your precise login route if it isn't the root
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Syncing data with cloud services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Prevent displaying layout parts while navigation fallback runs
+  if (!user) return null;
 
   // Core Metric Formulas
   const incomeTotal = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
@@ -30,35 +53,6 @@ export const Dashboard = () => {
     setTitle('');
     setAmount('');
   };
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Syncing data with cloud services...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Handle Protected Login View if user isn't authenticated yet
-  if (!user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-md space-y-6 text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-3xl font-extrabold text-gray-900">Finance Hub</h2>
-          <p className="text-sm text-gray-500">Please sign in to view and organize your active ledger items.</p>
-          <button 
-            onClick={loginWithGoogle}
-            className="w-full py-3 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-xl transition-colors shadow-sm"
-          >
-            Sign In With Google
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 px-4 py-8 sm:px-6 lg:px-8">
@@ -82,7 +76,6 @@ export const Dashboard = () => {
 
         {/* Ribbon Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Net Worth Card */}
           <div className="bg-blue-50/60 p-6 rounded-2xl border border-blue-100/80 shadow-sm transition-all hover:shadow-md">
             <h4 className="text-sm font-medium text-blue-700 uppercase tracking-wider">Calculated Net Worth</h4>
             <h2 className={`text-3xl font-extrabold mt-2 tracking-tight ${netWorth >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
@@ -90,7 +83,6 @@ export const Dashboard = () => {
             </h2>
           </div>
           
-          {/* Income Card */}
           <div className="bg-emerald-50/60 p-6 rounded-2xl border border-emerald-100/80 shadow-sm transition-all hover:shadow-md">
             <h4 className="text-sm font-medium text-emerald-700 uppercase tracking-wider">Inflow (Income)</h4>
             <h2 className="text-3xl font-extrabold text-emerald-700 mt-2 tracking-tight">
@@ -98,7 +90,6 @@ export const Dashboard = () => {
             </h2>
           </div>
           
-          {/* Expenses Card */}
           <div className="bg-rose-50/60 p-6 rounded-2xl border border-rose-100/80 shadow-sm transition-all hover:shadow-md">
             <h4 className="text-sm font-medium text-rose-700 uppercase tracking-wider">Outflow (Expenses)</h4>
             <h2 className="text-3xl font-extrabold text-rose-700 mt-2 tracking-tight">
@@ -131,8 +122,7 @@ export const Dashboard = () => {
 
         {/* Lower Dashboard Splits */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-          
-          {/* Transaction Input Engine */}
+          {/* Transaction Form */}
           <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Post Action Item</h3>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -146,7 +136,6 @@ export const Dashboard = () => {
                   className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 />
               </div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Amount ($)</label>
                 <input 
@@ -158,7 +147,6 @@ export const Dashboard = () => {
                   className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 />
               </div>
-              
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Stream Class</label>
                 <select 
@@ -170,7 +158,6 @@ export const Dashboard = () => {
                   <option value="income">Income Resource</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Context Category</label>
                 <select 
@@ -185,17 +172,16 @@ export const Dashboard = () => {
                   <option value="Salary">Inbound / Paycheck</option>
                 </select>
               </div>
-
               <button 
                 type="submit" 
-                className="w-full mt-2 py-3 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-xl transition-colors shadow-sm shadow-emerald-600/10"
+                className="w-full mt-2 py-3 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-xl transition-colors shadow-sm"
               >
                 Commit Entry
               </button>
             </form>
           </div>
 
-          {/* Real-time Ledger Log */}
+          {/* Activity Ledger */}
           <div className="lg:col-span-3 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Live Activity Ledger</h3>
             <div className="max-h-[440px] overflow-y-auto pr-1 space-y-3 scrollbar-thin">
@@ -222,7 +208,6 @@ export const Dashboard = () => {
                       <button 
                         onClick={() => deleteTransaction(t.id)} 
                         className="text-gray-300 hover:text-rose-500 active:text-rose-700 p-1 rounded-md transition-colors"
-                        title="Delete record"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -234,8 +219,8 @@ export const Dashboard = () => {
               )}
             </div>
           </div>
-
         </div>
+
       </div>
     </div>
   );

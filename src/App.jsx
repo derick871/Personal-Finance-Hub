@@ -15,7 +15,12 @@ function App() {
     <FinanceProvider>
       <AppContent />
     </FinanceProvider>
+    
   );
+
+  
 }
+
+
 
 export default App;
