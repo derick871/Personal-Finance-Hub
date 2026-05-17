@@ -1,4 +1,7 @@
 import React, { Children, createContext, useEffect, useState } from 'react'
+import { auth, db, googleProvider } from './firebase';
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 
 const financeContext = createContext();
 export const financeProvider =({Children}) =>{
