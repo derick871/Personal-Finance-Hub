@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useFinance } from '../Components/FinanceContext';
+import { useFinance } from './FinanceContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export const Dashboard = () => {
-  const { user, logoutUser, transactions, addTransaction, deleteTransaction, loading } = useFinance();
+  // FIXED: Changed logOutUser to logoutUser to match context definition
+  const { user, logoutUser, loginWithGoogle, transactions, addTransaction, deleteTransaction, loading } = useFinance();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense');
@@ -36,6 +37,24 @@ export const Dashboard = () => {
         <div className="text-center">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium animate-pulse">Syncing data with cloud services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle Protected Login View if user isn't authenticated yet
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-md space-y-6 text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-3xl font-extrabold text-gray-900">Finance Hub Canvas</h2>
+          <p className="text-sm text-gray-500">Please sign in to view and organize your active ledger items.</p>
+          <button 
+            onClick={loginWithGoogle}
+            className="w-full py-3 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded-xl transition-colors shadow-sm"
+          >
+            Sign In With Google
+          </button>
         </div>
       </div>
     );
@@ -100,7 +119,7 @@ export const Dashboard = () => {
                 <Tooltip 
                   cursor={{ fill: '#f9fafb' }}
                   contentStyle={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value) => [`$${value.toFixed(2)}`]}
+                  formatter={(value) => [`$${Number(value).toFixed(2)}`]}
                 />
                 <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px', fontSize: '14px' }} />
                 <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} barSize={60} />
@@ -198,7 +217,7 @@ export const Dashboard = () => {
                     </div>
                     <div className="flex items-center gap-4">
                       <span className={`text-sm font-bold ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
+                        {t.type === 'income' ? '+' : '-'}${Number(t.amount).toFixed(2)}
                       </span>
                       <button 
                         onClick={() => deleteTransaction(t.id)} 
