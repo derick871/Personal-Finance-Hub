@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db, googleProvider } from './firebase';
+import { auth, db, googleProvider } from '../firebaseConfig';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 
@@ -109,3 +109,4 @@ export const useFinance = () => {
   }
   return context;
 };
+export default FinanceProvider;

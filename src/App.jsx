@@ -1,13 +1,10 @@
-import './App.css'
-import FinanceContext from './Components/FinanceContext'
-import TransactionContext from './Components/TransactionContext'
-function App() {
+import FinanceContext, { FinanceProvider } from "./Components/FinanceContext"
 
+function App() {
   return (
     <>
-    <FinanceContext/>
-    <TransactionContext/>
-      
+     <FinanceContext/>
+    
     </>
   )
 }
