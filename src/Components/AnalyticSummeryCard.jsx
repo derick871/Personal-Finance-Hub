@@ -1,5 +1,4 @@
 // src/components/AnalyticsSummaryCards.jsx
-import React from 'react';
 import { Wallet, TrendingUp, TrendingDown, Percent } from 'lucide-react';
 import MetricCard from './MetricCard';
 

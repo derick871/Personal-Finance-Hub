@@ -1,16 +1,15 @@
 // src/components/Dashboard.jsx
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useFinance } from './FinanceContext';
 import { 
-  PlusCircle, Calendar, Cpu, LogOut, Bell, ShieldCheck, RefreshCw, 
-  LayoutDashboard, Layers, Trash2, Menu, X 
+  PlusCircle, Calendar, LogOut, Bell, LayoutDashboard, Layers, ShieldAlert 
 } from 'lucide-react';
 
 // Subcomponents Imported Below
-import AnalyticsSummaryCards from './AnalyticsSummaryCards';
-import BalanceAreaChart from './BalanceAreaChart';
-import ExpenseDistributionChart from './ExpenseDistributionChart';
-import TransactionTable from './TransactionTable';
+import AnalyticsSummaryCards from '../Components/AnalyticSummeryCard';
+import BalanceAreaChart from '../Components/BalanceAreaChart';
+import ExpenseDistributionChart from '../Components/ExpenseDistributionChart';
+import TransactionTable from '../Components/TransactionTable';
 
 const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Housing', 'Utilities', 'Transport', 'Leisure'];
 
@@ -18,21 +17,16 @@ export default function Dashboard() {
   const { user, transactions, logoutUser, addTransaction, deleteTransaction } = useFinance();
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Dashboard');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [formValues, setFormValues] = useState({
     description: '', amount: '', type: 'expense', category: 'Food',
     date: new Date().toISOString().split('T')[0]
   });
 
-  const [autoBills, setAutoBills] = useState([
+  const [autoBills] = useState([
     { id: 1, name: "WIFI Internet Home", amount: 35.00, paybill: "502100", account: "zuku552", phone: "254711223344", dueDay: 24 },
     { id: 2, name: "KPLC Tokens Failsafe", amount: 20.00, paybill: "888888", account: "37199281", phone: "254711223344", dueDay: 24 }
   ]);
-
-  const [billForm, setBillForm] = useState({
-    name: '', amount: '', paybill: '', account: '', phone: '2547', dueDay: '1'
-  });
 
   // --- COMPUTE ENGINES ---
   const dynamicMetrics = useMemo(() => {
@@ -96,16 +90,45 @@ export default function Dashboard() {
     setFormValues(prev => ({ ...prev, description: '', amount: '' }));
   };
 
+  // 🔒 CRITICAL AUTHENTICATION GUARD LAYER
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-xl">
+          <div className="mx-auto w-12 h-12 bg-rose-500/10 text-rose-400 rounded-xl flex items-center justify-center">
+            <ShieldAlert size={24} />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-slate-200 font-semibold text-base">Access Restricted</h2>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              You must be successfully logged into your cloud identity account profile to monitor dashboard analytics.
+            </p>
+          </div>
+          <div className="pt-2">
+            <button 
+              onClick={() => window.location.reload()} 
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 px-4 rounded-lg transition-colors"
+            >
+              Return to Login Portal
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-400 font-sans antialiased">
       {/* APP NAVBAR SHELL */}
       <nav className="bg-slate-900 text-slate-100 border-b border-slate-800/80 sticky top-0 z-50 px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between max-w-7xl mx-auto">
+          {/* Logo Brand Segment */}
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xs tracking-tighter">PFH</div>
             <span className="font-bold text-base bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">FinAnalytics Hub</span>
           </div>
           
+          {/* Internal Dashboard Route Filters */}
           <div className="hidden md:flex items-center gap-1">
             {[{ name: 'Dashboard', icon: <LayoutDashboard size={16} /> }, { name: 'Ledger Logs', icon: <Layers size={16} /> }].map((item) => (
               <button key={item.name} onClick={() => setActiveTab(item.name)} className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${activeTab === item.name ? 'bg-slate-800 text-blue-400 border border-slate-700/50' : 'text-slate-400 hover:text-slate-100'}`}>
@@ -114,8 +137,9 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2 text-[11px] bg-slate-950 border border-slate-800/80 px-3 py-1.5 rounded-xl">
+          {/* Right Metrics & Global Control Center Buttons */}
+          <div className="flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-950 border border-slate-800/80 px-3 py-1.5 rounded-xl">
               <Calendar size={13} className="text-blue-500" /> May 19, 2026 Context
             </div>
             <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
@@ -124,7 +148,16 @@ export default function Dashboard() {
                 ${dynamicMetrics.netCashFlow.toFixed(2)}
               </span>
             </div>
-            <button onClick={logoutUser} className="p-2 text-slate-400 hover:text-rose-400 transition-all"><LogOut size={16} /></button>
+            
+            {/* 🚪 REFINED EXIT SESSION CONTROL BUTTON */}
+            <button 
+              onClick={logoutUser} 
+              className="flex items-center gap-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200"
+              title="Terminate Secure Session"
+            >
+              <LogOut size={14} />
+              <span className="hidden sm:inline">Exit Session</span>
+            </button>
           </div>
         </div>
       </nav>
