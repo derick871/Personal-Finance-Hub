@@ -3,12 +3,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY_FALLBACK",
-  authDomain: "task-manager-df5a2.firebaseapp.com",
-  projectId: "task-manager-df5a2",
-  storageBucket: "task-manager-df5a2.appspot.com",
-  messagingSenderId: "847291048201",
-  appId: "1:847291048201:web:a1b2c3d4e5f6g7h8i9j0k"
+  apiKey: "AIzaSyAbyBcG25PxJJhLPbrrZdflULZ2RcIG2Ug",
+  authDomain: "reactproject-a66d3.firebaseapp.com",
+  projectId: "reactproject-a66d3",
+  storageBucket: "reactproject-a66d3.firebasestorage.app",
+  messagingSenderId: "847983672466",
+  appId: "1:847983672466:web:ec402a7779112cae0a3a4b",
+  measurementId: "G-ZFC1Q4GJCR"
 };
 
 const app = initializeApp(firebaseConfig);

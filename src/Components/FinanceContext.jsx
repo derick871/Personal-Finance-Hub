@@ -105,3 +105,5 @@ export const useFinance = () => {
   if (!context) throw new Error('useFinance must be wrapped inside a valid FinanceProvider structure.');
   return context;
 };
+//export const googleProvider = new GoogleAuthProvider();
+export default FinanceContext;
