@@ -32,7 +32,7 @@ export default function AuthPage() {
 
         <div className="text-center mb-8">
           <div className="inline-block bg-amber-600 px-3 py-1 rounded-lg text-white font-black text-xs tracking-tighter mb-3">
-            PFAH CORE
+            PFH CORE
           </div>
           <h2 className="text-2xl font-bold tracking-tight text-white">
             {isRegistering ? "Create System Account" : "Access Account Ledger"}
