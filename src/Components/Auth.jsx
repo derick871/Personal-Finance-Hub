@@ -82,9 +82,9 @@ export default function AuthPage() {
 
           <button
             type="submit"
-            className="w-half bg-slate-950 hover:bg-amber-500 active:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-600/10 mt-6"
+            className="w-half bg-slate-950 hover:bg-amber-500 active:bg-blue-700 text-white px-3 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 shadow-md shadow-blue-600/10 mt-6"
           >
-            {isRegistering ? "Execute Core Provisioning" : "Verify and Initialize Access"}
+            {isRegistering ? "Register" : "Initialize Access"}
             <ChevronRight size={14} />
           </button>
         </form>

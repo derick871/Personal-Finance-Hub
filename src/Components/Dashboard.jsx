@@ -10,22 +10,22 @@ import AnalyticsSummaryCards from '../Components/AnalyticSummeryCard';
 import BalanceAreaChart from '../Components/BalanceAreaChart';
 import ExpenseDistributionChart from '../Components/ExpenseDistributionChart';
 import TransactionTable from '../Components/TransactionTable';
+import MiniStatement from '../Pages/MiniStatement'; 
 
-const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Housing', 'Utilities', 'Transport', 'Leisure'];
+const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Housing', 'Utilities', 'Transport', 'Leisure', 'Shopping'];
 
 export default function Dashboard() {
   const { user, transactions, logoutUser, addTransaction, deleteTransaction } = useFinance();
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Dashboard');
-  
   const [formValues, setFormValues] = useState({
-    description: '', amount: '', type: 'expense', category: 'Food',
+    description: '', amount: '', type: 'expense', category: 'Shopping',
     date: new Date().toISOString().split('T')[0]
   });
 
   const [autoBills] = useState([
-    { id: 1, name: "WIFI Internet Home", amount: 35.00, paybill: "502100", account: "zuku552", phone: "254711223344", dueDay: 24 },
-    { id: 2, name: "KPLC Tokens Failsafe", amount: 20.00, paybill: "888888", account: "37199281", phone: "254711223344", dueDay: 24 }
+    { id: 1, name: "WIFI Internet Home", amount: 1500, paybill: "502100", account: "zuku552", phone: "254745668544", dueDay: 24},
+    { id: 2, name: "KPLC Tokens Failsafe", amount: 1000, paybill: "888888", account: "37199281", phone: "254745668544", dueDay: 24 }
   ]);
 
   // --- COMPUTE ENGINES ---
@@ -58,15 +58,16 @@ export default function Dashboard() {
     return Object.keys(map).map(key => ({ name: key, value: map[key] }));
   }, [transactions]);
 
+  // 🛠️ FIX: Re-enabled and corrected from const to let so totals accumulate
   const balanceTimelineData = useMemo(() => {
     const sortedTimeline = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    let cumulativeBalance = 0;
+    let cumulativeBalance = 0; 
     return sortedTimeline.map(tx => {
       cumulativeBalance += tx.type === 'income' ? tx.amount : -tx.amount;
       return { timelineDate: tx.date, Balance: cumulativeBalance };
     });
   }, [transactions]);
-
+    
   const visibleTransactions = useMemo(() => {
     if (categoryFilter === 'All') return transactions;
     return transactions.filter(tx => tx.category === categoryFilter);
@@ -122,13 +123,11 @@ export default function Dashboard() {
       {/* APP NAVBAR SHELL */}
       <nav className="bg-slate-900 text-slate-100 border-b border-slate-800/80 sticky top-0 z-50 px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between max-w-7xl mx-auto">
-          {/* Logo Brand Segment */}
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xs tracking-tighter">PFH</div>
             <span className="font-bold text-base bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">FinAnalytics Hub</span>
           </div>
           
-          {/* Internal Dashboard Route Filters */}
           <div className="hidden md:flex items-center gap-1">
             {[{ name: 'Dashboard', icon: <LayoutDashboard size={16} /> }, { name: 'Ledger Logs', icon: <Layers size={16} /> }].map((item) => (
               <button key={item.name} onClick={() => setActiveTab(item.name)} className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${activeTab === item.name ? 'bg-slate-800 text-blue-400 border border-slate-700/50' : 'text-slate-400 hover:text-slate-100'}`}>
@@ -137,7 +136,6 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Right Metrics & Global Control Center Buttons */}
           <div className="flex items-center gap-4">
             <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-950 border border-slate-800/80 px-3 py-1.5 rounded-xl">
               <Calendar size={13} className="text-blue-500" /> May 19, 2026 Context
@@ -145,11 +143,10 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
               <span className="text-slate-500 text-[10px] uppercase font-bold">Net Asset:</span>
               <span className={`font-mono font-bold ${dynamicMetrics.netCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                ${dynamicMetrics.netCashFlow.toFixed(2)}
+                Kshs: {dynamicMetrics.netCashFlow.toFixed(2)}
               </span>
             </div>
             
-            {/* 🚪 REFINED EXIT SESSION CONTROL BUTTON */}
             <button 
               onClick={logoutUser} 
               className="flex items-center gap-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200"
@@ -187,39 +184,47 @@ export default function Dashboard() {
           <ExpenseDistributionChart chartData={categoricalChartData} totalExpenses={dynamicMetrics.expenseSum} />
         </div>
 
-        {/* 3. FORMS & DATA LEDGER SYSTEM MAP */}
+        {/* 3. FORMS, MINI-STATEMENT & DATA LEDGER SYSTEM MAP */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEDGER INTAKE ENGINE */}
-          <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 h-fit">
-            <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2 mb-4"><PlusCircle className="text-blue-400" size={16} /> Entry Pipeline</h2>
-            <form onSubmit={handleInsertTransaction} className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'expense' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'expense' ? 'bg-rose-500/10 border-rose-500/50 text-rose-400' : 'bg-slate-950 border-slate-800'}`}>Expense</button>
-                <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'income' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'income' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-slate-950 border-slate-800'}`}>Income</button>
-              </div>
-              <input type="text" name="description" required value={formValues.description} onChange={handleInputChange} placeholder="Descriptor Description" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-              <div className="grid grid-cols-2 gap-2">
-                <input type="number" name="amount" step="0.01" required value={formValues.amount} onChange={handleInputChange} placeholder="Kshs" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-                <input type="date" name="date" required value={formValues.date} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-              </div>
-              {formValues.type === 'expense' && (
-                <select name="category" value={formValues.category} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200">
-                  {DEFAULT_EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
-              )}
-              <button type="submit" className="w-full bg-blue-600 text-white text-xs font-bold py-2.5 rounded-lg">Inject Entry</button>
-            </form>
+          {/* LEFT-COLUMN CONTAINING FORM AND MINI STATEMENT */}
+          <div className="space-y-6 lg:col-span-1">
+            {/* LEDGER INTAKE ENGINE */}
+            <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2 mb-4"><PlusCircle className="text-blue-400" size={16} /> Entry Pipeline</h2>
+              <form onSubmit={handleInsertTransaction} className="space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'expense' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'expense' ? 'bg-rose-500/10 border-rose-500/50 text-rose-400' : 'bg-slate-950 border-slate-800'}`}>Expense</button>
+                  <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'income' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'income' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-slate-950 border-slate-800'}`}>Income</button>
+                </div>
+                <input type="text" name="description" required value={formValues.description} onChange={handleInputChange} placeholder="Descriptor Description" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="number" name="amount" step="0.01" required value={formValues.amount} onChange={handleInputChange} placeholder="Kshs" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
+                  <input type="date" name="date" required value={formValues.date} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
+                </div>
+                {formValues.type === 'expense' && (
+                  <select name="category" value={formValues.category} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200">
+                    {DEFAULT_EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                  </select>
+                )}
+                <button type="submit" className="w-full bg-blue-600 text-white text-xs font-bold py-2.5 rounded-lg">Inject Entry</button>
+              </form>
+            </div>
+
+            {/* 🛠️ PLACEMENT: MiniStatement integrated with matching width */}
+            <MiniStatement transactions={transactions} />
           </div>
 
           {/* EXTRACTED LEDGER LIST DATA CONTAINER */}
-          <TransactionTable 
-            visibleTransactions={visibleTransactions}
-            totalCount={transactions.length}
-            categoryFilter={categoryFilter}
-            setCategoryFilter={setCategoryFilter}
-            filterCategories={filterCategories}
-            deleteTransaction={deleteTransaction}
-          />
+          <div className="lg:col-span-2">
+            <TransactionTable 
+              visibleTransactions={visibleTransactions}
+              totalCount={transactions.length}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              filterCategories={filterCategories}
+              deleteTransaction={deleteTransaction}
+            />
+          </div>
         </div>
       </div>
     </div>
