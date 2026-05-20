@@ -1,16 +1,50 @@
-# React + Vite
+# Analytic_hub
+A robust personal finance tracker and analytical dashboard built to streamline expense ingestion, budget tracking, and real-time financial reporting.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Key-features
+**Responsive Dashboard**: Visualizes spending behaviors using responsive line and pie charts.
 
-Currently, two official plugins are available:
+**Security Authentication**: Managed entirely via Firebase Auth (Email/Password & Google Provider).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**State management**: Predictable, global data flow handled via Redux Toolkit
 
-## React Compiler
+**Responsive UI**: Clean, dark-mode-first interfaces built with Tailwind CSS and shadcn/ui.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
+**Frontend**: React (Vite), Tailwind CSS, shadcn/ui, Recharts
+**Backend as-a-service**: Firebase (Firestore, Auth)
+**State management**: Redux Toolkit
 
-## Expanding the ESLint configuration
+## Get started
+Follow these steps to set up the project locally
+### Prerequisite
+Ensure you have [node.js]
+### 1. git clone
+```bash
+git clone[https://github.com/derick871/Analytic_Hub]
+cd Analytic_hub
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Install dependencies
+npm install
+
+3.Environmental variebles
+Create a .env.local file in the root directory and add your configurations:
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+
+4.Run the server
+```bash
+npm run dev
+
+## Project structure
+src/
+├── components/     # Reusable shadcn UI primitives (cards, buttons)
+├── context/        # React Context providers for global themes
+├── features/       # Redux slices and feature-specific logic
+├── pages/          # Main dashboard views and authentication screens
+├── utils/          # Formatting helpers and Firebase config
+└── App.jsx         # App routing and layout shell
+
+## Licence
+Distributed under the MIT lisence

@@ -4,13 +4,16 @@ import {
   PlusCircle, Calendar, LogOut, LayoutDashboard, Layers, ShieldAlert 
 } from 'lucide-react';
 
-// Subcomponents Imported Below
+// Subcomponents 
 import AnalyticsSummaryCards from '../Components/AnalyticSummeryCard';
 import BalanceAreaChart from '../Components/BalanceAreaChart';
 import ExpenseDistributionChart from '../Components/ExpenseDistributionChart';
 import TransactionTable from '../Components/TransactionTable';
 import MiniStatement from '../Pages/MiniStatement'; 
 import AutoBillAlerts from '../Pages/AutoBillAlert';
+
+//import Navbar from '../Layout/Navbar';
+//import Footer from '../Layout/Footer';
 
 const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Housing', 'Utilities', 'Transport', 'Leisure', 'Shopping'];
 

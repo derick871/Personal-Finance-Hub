@@ -2,7 +2,7 @@
 import  { useState } from 'react';
 import { 
   ShieldCheck, ArrowUpRight, Check, Mail,
-  Twitter, Linkedin, Youtube, ShieldAlert
+  Twitter, LinkedIn, Youtube, ShieldAlert
 } from 'lucide-react';
 
 export default function Footer() {
