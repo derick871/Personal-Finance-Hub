@@ -18,12 +18,16 @@ import {
   Filter, 
   Flame 
 } from 'lucide-react';
+
 const KPI_DATA = {
   totalIncome: 145000,
   totalExpenses: 92400,
   netSavings: 52600,
 };
-const savingsRate = ((KPI_DATA.totalincome - KPI_DATA.totalexpense)/KPI_DATA.totalincome)
+
+// Fixed case sensitivity matching and added percentage multiplication
+const savingsRate = ((KPI_DATA.totalIncome - KPI_DATA.totalExpenses) / KPI_DATA.totalIncome) * 100;
+
 const WEEKLY_TRENDS = [
   { name: 'Week 1', Income: 45000, Expenses: 22000 },
   { name: 'Week 2', Income: 35000, Expenses: 28400 },
@@ -34,7 +38,7 @@ const WEEKLY_TRENDS = [
 const CATEGORIES = [
   { name: 'Rent & Housing', amount: 35000, budget: 35000, color: 'bg-blue-500' },
   { name: 'Food & Dining', amount: 24200, budget: 25000, color: 'bg-orange-500' },
-  { name: 'Utilities & Water', amount: 18000, budget: 15000, color: 'bg-amber-500' }, // Over budget
+  { name: 'Utilities & Water', amount: 18000, budget: 15000, color: 'bg-amber-500' }, 
   { name: 'Entertainment', amount: 15200, budget: 20000, color: 'bg-purple-500' },
 ];
 
@@ -45,22 +49,25 @@ const TRANSACTIONS = [
   { id: 'TX-1004', date: 'May 10, 2026', description: 'Monthly House Rent', category: 'Rent & Housing', amount: -35000, type: 'recurring' },
   { id: 'TX-1005', date: 'May 05, 2026', description: 'Electronics Hub Purchase', category: 'Entertainment', amount: -15200, type: 'expense' },
 ];
-export default function monthlySummaryDashboard() {
 
-    const[searchTerms, setSearchTerms] =useState ("");
-    const[filterType, setFilterType] = useState ("All")
+// Renamed from monthlySummaryDashboard to PascalCase to follow React specifications
+export default function MonthlySummaryDashboard() {
+  const [searchTerms, setSearchTerms] = useState("");
+  const [filterType, setFilterType] = useState("All");
 
-    const filterTransaction = TRANSACTIONS.filter(tx=>{
-        const matchesSearch = tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              tx.category.toLowerCase().includes(searchTerms.toLowerCase())
-            if(filterType ==="All") return matchesSearch;
-            if(filterType === "income") return matchesSearch && tx.amount > 0;
-            if(filterType === "expense") return matchesSearch && tx.amount < 0;
-            if(filterType === "recurring") return matchesSearch && tx.type === "recurring";
+  // Aligned array filter variable names consistently
+  const filteredTransactions = TRANSACTIONS.filter(tx => {
+    const matchesSearch = tx.description.toLowerCase().includes(searchTerms.toLowerCase()) ||
+                          tx.category.toLowerCase().includes(searchTerms.toLowerCase());
         
-    });
+    if (filterType === "All") return matchesSearch;
+    if (filterType === "income") return matchesSearch && tx.amount > 0;
+    if (filterType === "expense") return matchesSearch && tx.amount < 0;
+    if (filterType === "recurring") return matchesSearch && tx.type === "recurring";
+    return matchesSearch;
+  });
 
-    return (
+  return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 text-slate-800 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
         
@@ -87,6 +94,7 @@ export default function monthlySummaryDashboard() {
               <ArrowUpRight className="h-6 w-6" />
             </div>
           </div>
+
           {/* Expenses Card */}
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div className="space-y-1">
@@ -193,28 +201,26 @@ export default function monthlySummaryDashboard() {
 
         {/* 4. Transaction Ledger & Controls */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          {/* Controls Bar */}
           <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold text-slate-900">Detailed Transaction Ledger</h2>
               <p className="text-xs text-slate-400">Complete historical logs for this operational window</p>
             </div>
             
-            {/* Action Tools */}
             <div className="flex flex-wrap items-center gap-2">
-              {/* Search Bar */}
+              {/* Search input mapped to searchTerms */}
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search ledger..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchTerms}
+                  onChange={(e) => setSearchTerms(e.target.value)}
                   className="pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white w-full sm:w-60 transition-all"
                 />
               </div>
 
-              {/* Filter Dropdown */}
+              {/* Filter selection mapped to capitalized cases correctly */}
               <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-slate-400" />
                 <select
@@ -222,7 +228,7 @@ export default function monthlySummaryDashboard() {
                   onChange={(e) => setFilterType(e.target.value)}
                   className="bg-transparent focus:outline-none cursor-pointer pr-1 text-slate-700"
                 >
-                  <option value="all">All Logs</option>
+                  <option value="All">All Logs</option>
                   <option value="income">Inflow Deposits</option>
                   <option value="expense">Direct Outflows</option>
                   <option value="recurring">Subscriptions / Standing Orders</option>
@@ -231,7 +237,6 @@ export default function monthlySummaryDashboard() {
             </div>
           </div>
 
-          {/* Table Ledger */}
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
