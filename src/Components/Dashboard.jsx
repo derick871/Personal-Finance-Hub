@@ -1,4 +1,3 @@
-// src/components/Dashboard.jsx
 import { useState, useMemo } from 'react';
 import { useFinance } from './FinanceContext';
 import { 

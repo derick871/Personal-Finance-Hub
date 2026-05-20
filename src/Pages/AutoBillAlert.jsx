@@ -1,5 +1,4 @@
-// src/Components/AutoBillAlerts.jsx
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useFinance } from '../Components/FinanceContext'; 
 import { Bell, PlusCircle, Trash2, CheckCircle2, Zap } from 'lucide-react';
 
