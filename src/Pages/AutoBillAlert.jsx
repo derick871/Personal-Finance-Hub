@@ -241,7 +241,7 @@ export default function AutoBillAlerts() {
               <div className={`h-48 border border-dashed rounded-lg flex flex-col items-center justify-center text-center p-4 ${
                 isDark ? 'border-slate-800' : 'border-slate-200'
               }`}>
-                <p className={`text-xs max-w-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <p className={`text-xs max-w-xs leading-relaxed ${isDark ? 'text-white' : 'text-slate-700'}`}>
                   No automated bills defined yet. Use the intake scheduler form to register utilities.
                 </p>
               </div>
@@ -250,7 +250,7 @@ export default function AutoBillAlerts() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className={`border-b text-[10px] uppercase tracking-wider font-bold ${
-                      isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
+                      isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-700'
                     }`}>
                       <th className="pb-3 pr-2">Company</th>
                       <th className="pb-3 px-2">Payment Target</th>

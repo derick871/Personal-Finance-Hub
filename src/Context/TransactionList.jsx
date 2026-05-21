@@ -1,6 +1,7 @@
 import { useTransactions } from '../Components/FinanceContext';
-
+import{useTheme} from '../context/ThemeContext';
 export const TransactionList = () => {
+  const { isDark } = useTheme();
   const { transactions, deleteTransaction } = useTransactions();
 
   // Calculations
@@ -25,6 +26,7 @@ export const TransactionList = () => {
           <h4>Expenses</h4>
           <h2 style={{ color: 'red' }}>${expenses}</h2>
         </div>
+        isDark ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-800'
       </div>
 
       {/* History List */}
@@ -48,6 +50,7 @@ export const TransactionList = () => {
                 style={{ marginLeft: '10px', background: 'none', border: 'none', color: 'red', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 X
+                isDark ? 'text-slate-500 hover:text-rose-500' : 'text-red-500 hover:text-red-700'
               </button>
             </span>
           </li>

@@ -1,13 +1,13 @@
 // src/components/ExpenseDistributionChart.jsx
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { useState } from 'react';
+//import { useState } from 'react';
 import { useTheme } from '../context/ThemeContext'; 
 
 // Vibrant colors that work well across both light and dark backgrounds
 const PALETTE = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
 export default function ExpenseDistributionChart({ chartData = [], totalExpenses = 0 }) {
-    const [isOpen, setIsOpen] = useState(false); // Retained from your original setup
+    //const [isOpen, setIsOpen] = useState(false); 
     const { isDark } = useTheme();
 
     return (

@@ -142,8 +142,8 @@ export default function MiniStatement({ transactions }) {
             disabled={miniStatement.records.length === 0}
             className={`p-2 rounded-lg transition-all border disabled:opacity-40 disabled:cursor-not-allowed ${
               isDark 
-                ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700/60' 
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border-slate-200'
+                ? 'bg-slate-950 hover:bg-amber-500 text-slate-300 hover:text-white border-slate-700/60' 
+                : 'bg-slate-500 hover:bg-slate-400 text-white hover:text-amber-500 border-slate-500'
             }`}
             title="Download Statement PDF"
           >
@@ -245,7 +245,7 @@ export default function MiniStatement({ transactions }) {
           ))
         ) : (
           <div className={`text-center py-8 text-xs border border-dashed rounded-xl ${
-            isDark ? 'text-slate-600 border-slate-800' : 'text-slate-400 border-slate-200'
+            isDark ? 'text-white border-slate-800' : 'text-slate-600 border-slate-200'
           }`}>
             No items matching your evaluation criteria
           </div>
@@ -253,13 +253,13 @@ export default function MiniStatement({ transactions }) {
       </div>
 
       <div className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
-        isDark ? 'bg-slate-950 border-slate-800/60' : 'bg-slate-50 border-slate-200'
+        isDark ? 'bg-slate-950 border-slate-800/60 text-white' : 'bg-slate-50 text-slate-700 border-slate-200'
       }`}>
-        <span className="text-slate-500 font-medium uppercase tracking-wider text-[10px]">
+        <span className="text-slate-700 font-medium uppercase tracking-wider text-[10px]">
           Window Aggregation:
         </span>
         <span className={`font-mono font-bold px-2 py-1 rounded border ${
-          isDark ? 'text-slate-200 bg-slate-900 border-slate-800' : 'text-slate-800 bg-white border-slate-200'
+          isDark ? 'text-white bg-slate-900 border-slate-800' : 'text-slate-800 bg-white border-slate-200'
         }`}>
           Kshs {miniStatement.aggregateValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
