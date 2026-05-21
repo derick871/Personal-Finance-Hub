@@ -1,6 +1,9 @@
 // src/components/MiniStatement.jsx
 import { useState, useMemo } from 'react';
-import { FileText, ArrowUpRight, ArrowDownLeft, Clock, SlidersHorizontal, ListFilter } from 'lucide-react';
+import { FileText, ArrowUpRight, ArrowDownLeft, Clock, SlidersHorizontal, ListFilter, Download } from 'lucide-react';
+// Import PDF generators
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 export default function MiniStatement({ transactions }) {
   // Local Control States for the Engine
@@ -30,6 +33,77 @@ export default function MiniStatement({ transactions }) {
     };
   }, [transactions, statementType, statementLimit]);
 
+  // --- PDF GENERATION ENGINE HANDLE ---
+  const downloadPDFStatement = () => {
+    const doc = new jsPDF();
+    
+    // 1. Document Branding Header Context
+    doc.setFillColor(15, 23, 42); // slate-900 canvas block
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("FINANCEHUB STATEMENT", 14, 22);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184); // slate-400
+    doc.text(`Generated at: ${new Date().toLocaleDateString()} ${miniStatement.generatedAt}`, 14, 32);
+    doc.text(`Filter Mode: ${statementType.toUpperCase()}`, 150, 32);
+
+    // 2. Summary Card Block Metrics
+    doc.setDrawColor(226, 232, 240); // slate-200
+    doc.setFillColor(248, 250, 252); // slate-50
+    doc.roundedRect(14, 48, 182, 20, 3, 3, 'FD');
+    
+    doc.setTextColor(100, 116, 139); // slate-500
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("WINDOW AGGREGATION TOTAL", 20, 56);
+    
+    doc.setTextColor(15, 23, 42); // slate-900
+    doc.setFontSize(14);
+    doc.text(`Kshs ${miniStatement.aggregateValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 20, 64);
+
+    // 3. Transform Data Array Rows to AutoTable Grid Format
+    const tableColumns = ["Date", "Description", "Category", "Type", "Amount"];
+    const tableRows = miniStatement.records.map(tx => [
+      tx.date,
+      tx.description,
+      tx.category,
+      tx.type.toUpperCase(),
+      `${tx.type === 'income' ? '+' : '-'} KShs ${tx.amount.toFixed(2)}`
+    ]);
+
+    // 4. Paint the Data Table
+    doc.autoTable({
+      startY: 76,
+      head: [tableColumns],
+      body: tableRows,
+      theme: 'striped',
+      headStyles: { fillColor: [30, 41, 59], fontStyle: 'bold', fontSize: 10 }, // slate-800
+      bodyStyles: { fontSize: 9, textColor: [51, 65, 85] }, // slate-700
+      columnStyles: {
+        4: { halign: 'right', fontStyle: 'bold' } // Align currency column layout cleanly
+      },
+      didParseCell: function(data) {
+        // Dynamic coloring condition row cells based on cash vector type
+        if (data.column.index === 4) {
+          const rowText = data.cell.raw || "";
+          if (rowText.startsWith('+')) {
+            data.cell.styles.textColor = [16, 185, 129]; // emerald-500
+          } else if (rowText.startsWith('-')) {
+            data.cell.styles.textColor = [244, 63, 94]; // rose-500
+          }
+        }
+      }
+    });
+
+    // 5. Trigger System File Browser Storage Pipeline Save Action
+    doc.save(`Mini_Statement_${Date.now()}.pdf`);
+  };
+
   return (
     <div className="bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-xl space-y-4 max-w-md w-full">
       
@@ -46,9 +120,21 @@ export default function MiniStatement({ transactions }) {
           </div>
         </div>
         
-        {/* RUNTIME METRIC BADGE */}
-        <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] font-mono font-medium text-slate-400">
-          Vol: <span className="text-blue-400 font-bold">{miniStatement.volume}</span>
+        <div className="flex items-center gap-2">
+          {/* RUNTIME DOWNLOAD BUTTON */}
+          <button
+            onClick={downloadPDFStatement}
+            disabled={miniStatement.records.length === 0}
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700/60 disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Download Statement PDF"
+          >
+            <Download size={14} />
+          </button>
+
+          {/* RUNTIME METRIC BADGE */}
+          <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] font-mono font-medium text-slate-400">
+            Vol: <span className="text-blue-400 font-bold">{miniStatement.volume}</span>
+          </div>
         </div>
       </div>
 
@@ -92,7 +178,6 @@ export default function MiniStatement({ transactions }) {
               className="bg-slate-950/50 hover:bg-slate-950 border border-slate-800/40 hover:border-slate-800 p-2.5 rounded-xl flex items-center justify-between transition-all group"
             >
               <div className="flex items-center gap-3 min-w-0">
-                {/* Visual Direction Indicator Indicator */}
                 <div className={`p-1.5 rounded-lg shrink-0 ${
                   tx.type === 'income' 
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/10' 
@@ -101,7 +186,6 @@ export default function MiniStatement({ transactions }) {
                   {tx.type === 'income' ? <ArrowUpRight size={14} /> : <ArrowDownLeft size={14} />}
                 </div>
                 
-                {/* Transaction Descriptive Substrings */}
                 <div className="min-w-0">
                   <h4 className="text-slate-200 text-xs font-semibold truncate max-w-[180px]">
                     {tx.description}
@@ -116,7 +200,6 @@ export default function MiniStatement({ transactions }) {
                 </div>
               </div>
 
-              {/* Amount Display */}
               <div className={`text-right text-xs font-mono font-bold ${
                 tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'
               }`}>
