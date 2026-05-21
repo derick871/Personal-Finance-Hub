@@ -193,7 +193,7 @@ export default function AutoBillAlerts() {
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 mt-2">
+            <button type="submit" className="w-half p-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 mt-2">
               <PlusCircle size={14} /> Commit Bill Automation
             </button>
           </form>

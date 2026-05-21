@@ -160,7 +160,7 @@ export default function Dashboard() {
                         {DEFAULT_EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     )}
-                    <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-md shadow-blue-600/10">Inject Entry</button>
+                    <button type="submit" className="w-half p-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-md shadow-blue-600/10">Inject Entry</button>
                   </form>
                 </div>
 
@@ -183,7 +183,7 @@ export default function Dashboard() {
         );
 
       case 'Monthly Summary':
-        {/* Renders your full structural subcomponent when tab clicks */}
+        {/* Renders  full structural subcomponent when tab clicks */}
         return <MonthlySummaryDashboard />;
 
       case 'Ledger Logs':
