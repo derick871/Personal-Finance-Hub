@@ -11,7 +11,7 @@ A robust personal finance tracker and analytical dashboard built to streamline e
 **Responsive UI**: Clean, dark-mode-first interfaces built with Tailwind CSS and shadcn/ui.
 
 ## Tech Stack
-**Frontend**: React (Vite), Tailwind CSS, shadcn/ui, Recharts
+**Frontend**: React (Vite), Tailwind CSS, shadcn/ui, Recharts,jspdf
 
 **Backend as-a-service**: Firebase (Firestore, Auth)
 **State management**: Redux Toolkit
