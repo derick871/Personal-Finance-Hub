@@ -1,8 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useFinance } from './FinanceContext';
-import { 
-  PlusCircle, Calendar, LogOut, LayoutDashboard, Layers, ShieldAlert 
-} from 'lucide-react';
+import { PlusCircle, ShieldAlert } from 'lucide-react';
 
 // Subcomponents 
 import AnalyticsSummaryCards from '../Components/AnalyticSummeryCard';
@@ -11,9 +9,7 @@ import ExpenseDistributionChart from '../Components/ExpenseDistributionChart';
 import TransactionTable from '../Components/TransactionTable';
 import MiniStatement from '../Pages/MiniStatement'; 
 import AutoBillAlerts from '../Pages/AutoBillAlert';
-
-//import Navbar from '../Layout/Navbar';
-//import Footer from '../Layout/Footer';
+import Navbar from '../Layout/Navbar';
 
 const DEFAULT_EXPENSE_CATEGORIES = ['Food', 'Housing', 'Utilities', 'Transport', 'Leisure', 'Shopping'];
 
@@ -107,102 +103,105 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-400 font-sans antialiased">
-      {/* APP NAVBAR SHELL */}
-      <nav className="bg-slate-900 text-slate-100 border-b border-slate-800/80 sticky top-0 z-50 px-4 lg:px-8">
-        <div className="flex h-16 items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xs tracking-tighter">PFH</div>
-            <span className="font-bold text-base bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">FinAnalytics Hub</span>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-1">
-            {[{ name: 'Dashboard', icon: <LayoutDashboard size={16} /> }, { name: 'Ledger Logs', icon: <Layers size={16} /> }].map((item) => (
-              <button key={item.name} onClick={() => setActiveTab(item.name)} className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${activeTab === item.name ? 'bg-slate-800 text-blue-400 border border-slate-700/50' : 'text-slate-400 hover:text-slate-100'}`}>
-                {item.icon} {item.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-950 border border-slate-800/80 px-3 py-1.5 rounded-xl">
-              <Calendar size={13} className="text-blue-500" /> May 19, 2026 Context
-            </div>
-            <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
-              <span className="text-slate-500 text-[10px] uppercase font-bold">Net Asset:</span>
-              <span className={`font-mono font-bold ${dynamicMetrics.netCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                Kshs: {dynamicMetrics.netCashFlow.toFixed(2)}
-              </span>
-            </div>
-            
-            <button 
-              onClick={logoutUser} 
-              className="flex items-center gap-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200"
-              title="Terminate Secure Session"
-            >
-              <LogOut size={14} />
-              <span className="hidden sm:inline">Exit Session</span>
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 font-sans antialiased transition-colors duration-300">
+      
+      {/* INTEGRATED THEME-ENABLED SYSTEM NAVBAR */}
+      <Navbar 
+        netCashFlow={dynamicMetrics.netCashFlow} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        onLogout={logoutUser} 
+      />
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
-        {/* AUTOMATION WARNING BANNER MODULE PLACEHOLDER */}
-        <AutoBillAlerts />
+        
+        {/* TAB TARGET VIEW SWITCH ENGINE */}
+        {activeTab === 'Dashboard' ? (
+          <>
+            {/* AUTOMATION WARNING BANNER MODULE */}
+            <AutoBillAlerts />
 
-        {/* 1. SEPARATED KPI CARDS BLOCK */}
-        <AnalyticsSummaryCards metrics={dynamicMetrics} />
+            {/* 1. SEPARATED KPI CARDS BLOCK */}
+            <AnalyticsSummaryCards metrics={dynamicMetrics} />
 
-        {/* 2. RECHARTS HOOK BLOCKS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <BalanceAreaChart timelineData={balanceTimelineData} />
-          <ExpenseDistributionChart chartData={categoricalChartData} totalExpenses={dynamicMetrics.expenseSum} />
-        </div>
-
-        {/* 3. FORMS, MINI-STATEMENT & DATA LEDGER SYSTEM MAP */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="space-y-6 lg:col-span-1">
-            {/* LEDGER INTAKE ENGINE */}
-            <div className="bg-slate-900 p-5 rounded-xl border border-slate-800">
-              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2 mb-4"><PlusCircle className="text-blue-400" size={16} /> Entry Pipeline</h2>
-              <form onSubmit={handleInsertTransaction} className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'expense' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'expense' ? 'bg-rose-500/10 border-rose-500/50 text-rose-400' : 'bg-slate-950 border-slate-800'}`}>Expense</button>
-                  <button type="button" onClick={() => setFormValues(prev => ({ ...prev, type: 'income' }))} className={`py-2 text-xs rounded-lg border font-semibold ${formValues.type === 'income' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-slate-950 border-slate-800'}`}>Income</button>
-                </div>
-                <input type="text" name="description" required value={formValues.description} onChange={handleInputChange} placeholder="Descriptor Description" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="number" name="amount" step="0.01" required value={formValues.amount} onChange={handleInputChange} placeholder="Kshs" className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-                  <input type="date" name="date" required value={formValues.date} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200" />
-                </div>
-                {formValues.type === 'expense' && (
-                  <select name="category" value={formValues.category} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-200">
-                    {DEFAULT_EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  </select>
-                )}
-                <button type="submit" className="w-full bg-blue-600 text-white text-xs font-bold py-2.5 rounded-lg">Inject Entry</button>
-              </form>
+            {/* 2. RECHARTS HOOK BLOCKS */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <BalanceAreaChart timelineData={balanceTimelineData} />
+              <ExpenseDistributionChart chartData={categoricalChartData} totalExpenses={dynamicMetrics.expenseSum} />
             </div>
 
-            <MiniStatement transactions={transactions} />
-          </div>
+            {/* 3. FORMS & DATA LEDGER PIPELINES */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="space-y-6 lg:col-span-1">
+                {/* LEDGER INTAKE ENGINE */}
+                <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                  <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-4">
+                    <PlusCircle className="text-blue-500 dark:text-blue-400" size={16} /> 
+                    Entry Pipeline
+                  </h2>
+                  <form onSubmit={handleInsertTransaction} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setFormValues(prev => ({ ...prev, type: 'expense' }))} 
+                        className={`py-2 text-xs rounded-lg border font-semibold transition-colors ${formValues.type === 'expense' ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/50 text-rose-600 dark:text-rose-400' : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'}`}
+                      >
+                        Expense
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setFormValues(prev => ({ ...prev, type: 'income' }))} 
+                        className={`py-2 text-xs rounded-lg border font-semibold transition-colors ${formValues.type === 'income' ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/50 text-emerald-600 dark:text-emerald-400' : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'}`}
+                      >
+                        Income
+                      </button>
+                    </div>
+                    <input type="text" name="description" required value={formValues.description} onChange={handleInputChange} placeholder="Descriptor Description" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="number" name="amount" step="0.01" required value={formValues.amount} onChange={handleInputChange} placeholder="Kshs" className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500" />
+                      <input type="date" name="date" required value={formValues.date} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500" />
+                    </div>
+                    {formValues.type === 'expense' && (
+                      <select name="category" value={formValues.category} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500">
+                        {DEFAULT_EXPENSE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                    )}
+                    <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-md shadow-blue-600/10">Inject Entry</button>
+                  </form>
+                </div>
 
-          {/* EXTRACTED LEDGER LIST DATA CONTAINER */}
-          <div className="lg:col-span-2">
+                <MiniStatement transactions={transactions} />
+              </div>
+
+              {/* EXTRACTED LEDGER LIST DATA CONTAINER */}
+              <div className="lg:col-span-2">
+                <TransactionTable 
+                  visibleTransactions={visibleTransactions}
+                  totalCount={transactions.length}
+                  categoryFilter={categoryFilter}
+                  setCategoryFilter={setCategoryFilter}
+                  filterCategories={filterCategories}
+                  deleteTransaction={deleteTransaction}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          /* LEDGER LOGS CORE ROOT COMPONENT INTERFACE */
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm min-h-[500px]">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Ledger Audit History</h1>
+            <p className="text-xs text-slate-500 mt-1 mb-6">Historical data pipeline view tracking deep real-time system allocations.</p>
             <TransactionTable 
-              visibleTransactions={visibleTransactions}
+              visibleTransactions={transactions}
               totalCount={transactions.length}
-              categoryFilter={categoryFilter}
-              setCategoryFilter={setCategoryFilter}
+              categoryFilter="All"
+              setCategoryFilter={() => {}}
               filterCategories={filterCategories}
               deleteTransaction={deleteTransaction}
             />
           </div>
-          <div>
-          
-          </div>
-        </div>
+        )}
+
       </div>
     </div>
   );

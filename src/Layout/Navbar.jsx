@@ -9,7 +9,7 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
       return document.documentElement.classList.contains('dark') || 
              localStorage.getItem('theme') === 'dark';
     }
-    return true; // Default to layout snapshot preference
+    return true; 
   });
 
   // Handle synchronization of class injection onto the document object
@@ -40,7 +40,6 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
           </span>
         </div>
 
-        {/* MIDDLE: ROUTE LINKS (DESKTOP) */}
         <div className="hidden md:flex items-center gap-1.5">
           <button 
             onClick={() => setActiveTab('Dashboard')} 
