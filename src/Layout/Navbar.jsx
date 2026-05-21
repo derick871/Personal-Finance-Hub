@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useTheme } from '../context/ThemeContext'; // Adjust path based on your folders
+import { useTheme } from '../context/ThemeContext'; 
 import { LayoutDashboard, Layers, Calendar, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
 
-  // Updated layout tracking point matching your snapshot rules
   const CURRENT_SYSTEM_DATE = "May 21, 2026";
 
   return (
@@ -15,7 +14,7 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
         
         {/* LEFT: BRAND LOGO */}
         <div className="flex items-center gap-2">
-          <div className="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xs tracking-tighter shadow-md shadow-blue-600/20">
+          <div className="bg-amber-600 text-white p-1.5 rounded-lg font-black text-xs tracking-tighter shadow-md shadow-blue-600/20">
             PFH
           </div>
           <span className="font-bold text-base bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent tracking-tight">
