@@ -1,4 +1,5 @@
 import { FinanceProvider, useFinance } from './Components/FinanceContext';
+import { ThemeProvider } from './context/ThemeContext'; // Adjusted to match standard directory tracking
 import Auth from './Components/Auth';
 import Dashboard from './Components/Dashboard';
 
@@ -9,14 +10,16 @@ function AppContent() {
   if (!user) {
     return <Auth />;
   }
-
+``
   return <Dashboard />;
 }
 
 export default function App() {
   return (
-    <FinanceProvider>
-      <AppContent />
-    </FinanceProvider>
+    <ThemeProvider>
+      <FinanceProvider>
+        <AppContent />
+      </FinanceProvider>
+    </ThemeProvider>
   );
 }

@@ -1,30 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTheme } from '../context/ThemeContext'; // Adjust path based on your folders
 import { LayoutDashboard, Layers, Calendar, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
-  // Track dark layer status locally, initializing from preference state
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark') || 
-             localStorage.getItem('theme') === 'dark';
-    }
-    return true; 
-  });
+  const { isDark, toggleTheme } = useTheme();
 
-  // Handle synchronization of class injection onto the document object
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
-
-  // Hardcoded date layout matching the project context snapshot
-  const CURRENT_SYSTEM_DATE = "May 19, 2026";
+  // Updated layout tracking point matching your snapshot rules
+  const CURRENT_SYSTEM_DATE = "May 21, 2026";
 
   return (
     <nav className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-800/80 sticky top-0 z-50 px-4 lg:px-8 shadow-sm transition-colors duration-300">
@@ -40,6 +23,7 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
           </span>
         </div>
 
+        {/* MIDDLE: MAIN DESKTOP PIPELINE TABS */}
         <div className="hidden md:flex items-center gap-1.5">
           <button 
             onClick={() => setActiveTab('Dashboard')} 
@@ -54,6 +38,18 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
           </button>
           
           <button 
+            onClick={() => setActiveTab('Monthly Summary')} 
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              activeTab === 'Monthly Summary' 
+                ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-slate-700/50 shadow-inner' 
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            <Layers size={14} /> 
+            <span>Monthly Summary</span>
+          </button>
+
+          <button 
             onClick={() => setActiveTab('Ledger Logs')} 
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
               activeTab === 'Ledger Logs' 
@@ -66,24 +62,25 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
           </button>
         </div>
 
-        {/* RIGHT: METRICS, THEME TUNER & SESSION BUTTON (DESKTOP) */}
+        {/* RIGHT: METRICS, THEME CONTROLS & SESSION LOGOUT (DESKTOP) */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Dynamic Theme Toggle Action Button Container */}
+          
+          {/* Universal Context Theme Toggle Button */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={toggleTheme}
             className="p-2 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200"
-            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            {darkMode ? <Sun size={15} /> : <Moon size={15} />}
+            {isDark ? <Sun size={15} className="text-amber-500" /> : <Moon size={15} className="text-indigo-400" />}
           </button>
 
-          {/* Calendar Anchor */}
+          {/* System Date Calendar Capsule */}
           <div className="flex items-center gap-2 text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 px-3 py-1.5 rounded-xl transition-colors">
             <Calendar size={13} className="text-blue-600 dark:text-blue-500" /> 
             <span>{CURRENT_SYSTEM_DATE}</span>
           </div>
 
-          {/* Quick Balance Preview */}
+          {/* Quick Balance Matrix Tracker */}
           <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs transition-colors">
             <span className="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold tracking-wider">Net Asset:</span>
             <span className={`font-mono font-bold ${netCashFlow >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
@@ -91,32 +88,33 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
             </span>
           </div>
           
-          {/* EXIT SESSION BUTTON */}
+          {/* SECURE TERMINATION TRIGGER */}
           <button 
             onClick={onLogout} 
             className="flex items-center gap-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 dark:hover:bg-rose-50 hover:text-white border border-rose-200 dark:border-rose-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 shadow-sm"
-            title="Terminate Secure Session"
           >
             <LogOut size={14} />
             <span>Exit Session</span>
           </button>
         </div>
 
-        {/* MOBILE TRIGGER SWITCH BUTTON */}
+        {/* MOBILE INTERACTIVE ACTION STACK */}
         <div className="md:hidden flex items-center gap-2">
-          {/* Mobile Theme Toggle Button */}
+          
+          {/* Mobile Theme Switcher */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={toggleTheme}
             className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
           >
-            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            {isDark ? <Sun size={16} className="text-amber-500" /> : <Moon size={16} className="text-indigo-400" />}
           </button>
 
-          {/* Quick Balance Mobile Metric */}
+          {/* Mini-Cashflow Float Label */}
           <div className="bg-slate-100 dark:bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 transition-colors">
             Kshs {netCashFlow.toFixed(0)}
           </div>
           
+          {/* Menu Drawer Toggle */}
           <button 
             onClick={() => setIsOpen(!isOpen)} 
             className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 bg-slate-100 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/40 focus:outline-none transition-colors"
@@ -126,7 +124,7 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
         </div>
       </div>
 
-      {/* MOBILE EXPANDED NAVIGATION PANEL */}
+      {/* MOBILE COLLAPSED DRAWER EXPANSION MENU */}
       {isOpen && (
         <div className="md:hidden border-t border-slate-200 dark:border-slate-800/60 py-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-150">
           <div className="px-2 space-y-1">
@@ -136,7 +134,15 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
                 activeTab === 'Dashboard' ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <LayoutDashboard size={16} /> Dashboard
+              <LayoutDashboard size={16} /> Dashboard Pipeline
+            </button>
+            <button 
+              onClick={() => { setActiveTab('Monthly Summary'); setIsOpen(false); }} 
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
+                activeTab === 'Monthly Summary' ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <Layers size={16} /> Monthly Summary
             </button>
             <button 
               onClick={() => { setActiveTab('Ledger Logs'); setIsOpen(false); }} 
@@ -144,26 +150,11 @@ export default function Navbar({ netCashFlow, activeTab, setActiveTab, onLogout 
                 activeTab === 'Ledger Logs' ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <Layers size={16} /> Ledger Logs
-            </button>
-            <button 
-              onClick={() => { setActiveTab('Mini-Statement'); setIsOpen(false); }} 
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
-                activeTab === 'Mini-Statement' ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Layers size={16} /> Mini-Statement
-            </button>
-            <button 
-              onClick={() => { setActiveTab('Balance curve'); setIsOpen(false); }} 
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
-                activeTab === 'Balance curve' ? 'bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Layers size={16} /> Balance curve
+              <Layers size={16} /> Ledger Audit Logs
             </button>
           </div>
           
+          {/* Drawer Metrics Footer Info */}
           <div className="pt-3 border-t border-slate-200 dark:border-slate-800/60 px-4 space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
               <span className="flex items-center gap-1.5"><Calendar size={12}/> Pipeline Context:</span>

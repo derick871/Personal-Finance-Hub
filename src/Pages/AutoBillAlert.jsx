@@ -246,7 +246,7 @@ export default function AutoBillAlerts() {
                           </td>
                           <td className="py-3 px-2 text-slate-300">
                             <span className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 font-mono">
-                              Day {bill.dueDay}
+                              Day {bill.dueDate}
                             </span>
                           </td>
                           <td className="py-3 px-2 text-right font-mono font-bold text-slate-200">

@@ -1,4 +1,3 @@
-// src/components/TransactionTable.jsx
 import { Filter, Trash2, Layers } from 'lucide-react';
 
 export default function TransactionTable({ 

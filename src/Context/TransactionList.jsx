@@ -56,3 +56,4 @@ export const TransactionList = () => {
     </div>
   );
 };
+export default TransactionList;

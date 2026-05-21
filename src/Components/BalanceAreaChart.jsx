@@ -5,8 +5,8 @@ export default function BalanceAreaChart({ timelineData }) {
   return (
     <div className="lg:col-span-2 bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-sm flex flex-col justify-between">
       <div className="mb-4">
-        <h2 className="text-sm font-semibold text-slate-200">Balance Progression Curve</h2>
-        <p className="text-[11px] text-slate-500">Dynamic telemetry timeline showing asset depth adjustments</p>
+        <h2 className="text-sm font-semibold text-white">Balance Progression Curve</h2>
+        <p className="text-[11px] text-white">Dynamic telemetry timeline showing asset depth adjustments</p>
       </div>
       <div className="h-64 w-full">
         {timelineData.length > 0 ? (
