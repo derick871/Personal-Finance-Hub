@@ -1,5 +1,5 @@
 import { FinanceProvider, useFinance } from './Components/FinanceContext';
-import { ThemeProvider } from './context/ThemeContext'; // Adjusted to match standard directory tracking
+import { ThemeProvider } from './Context/ThemeContext'; 
 import Auth from './Components/Auth';
 import Dashboard from './Components/Dashboard';
 
